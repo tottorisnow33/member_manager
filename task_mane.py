@@ -1,6 +1,8 @@
 import pandas as pd
 import sys
 import tkinter as tk
+import time
+import datetime
 
 #メイン関数
 def main():
@@ -23,6 +25,8 @@ def main():
     header.grid(row=0, column=5)
     header = tk.Label(text=u"ひとこと")
     header.grid(row=0, column=6)
+    header = tk.Label(text=u"最終更新時間")
+    header.grid(row=0, column=7)
     
     #ラベルを宣言
     label_name = [tk.Label(text=u"temp")for i in range(3)]
@@ -32,6 +36,7 @@ def main():
     label_memori = [tk.Label(text=u"temp")for i in range(3)]
     label_shigoto = [tk.Label(text=u"temp")for i in range(3)]
     label_hitokoto = [tk.Label(text=u"temp")for i in range(3)]
+    label_data = [tk.Label(text=u"temp")for i in range(3)]
     
     #i行目のラベルを配置
     for i in range(3):
@@ -42,12 +47,13 @@ def main():
         label_memori[i].grid(row=i + 1, column=4)
         label_shigoto[i].grid(row=i + 1, column=5)
         label_hitokoto[i].grid(row=i + 1, column=6)
+        label_data[i].grid(row=i + 1, column=7)
     
     
-    refresh_data(label_name, label_hirou, label_yasumi, label_nemusa, label_memori, label_shigoto, label_hitokoto)
+    refresh_data(label_name, label_hirou, label_yasumi, label_nemusa, label_memori, label_shigoto, label_hitokoto, label_data)
     
     # 読み込みボタンの作成
-    btn = tk.Button(text='読み込み', command=lambda: refresh_data(label_name, label_hirou, label_yasumi, label_nemusa, label_memori, label_shigoto, label_hitokoto))
+    btn = tk.Button(text='読み込み', command=lambda: refresh_data(label_name, label_hirou, label_yasumi, label_nemusa, label_memori, label_shigoto, label_hitokoto, label_data))
     btn.place(x=230, y=90) #ボタンを配置する位置の設定
     
     #書き込みボタンの作成
@@ -60,7 +66,7 @@ def main():
 
 
 #値をCSVから読み込んで更新する関数
-def refresh_data(name, hirou, yasumi, nemusa, memori, shigoto, hitokoto):
+def refresh_data(name, hirou, yasumi, nemusa, memori, shigoto, hitokoto, data):
     
     print("読み込み")
     #情報読み込み
@@ -84,6 +90,8 @@ def refresh_data(name, hirou, yasumi, nemusa, memori, shigoto, hitokoto):
         shigoto[i]["text"] = str_buff
         str_buff = v[6]
         hitokoto[i]["text"] = str_buff
+        str_buff = v[7]
+        data[i]["text"] = str_buff
         
 
 #値をCSVに書き込む関数
@@ -108,6 +116,7 @@ def write_data():
             memori = v[4]
             shigoto = v[5]
             hitokoto = v[6]
+            data = v[7]
             #変更情報取得
             print("あなたのユーザーIDは%dで、%sさんですね。"% (user_id, name))
             
@@ -124,6 +133,10 @@ def write_data():
             print("ひとことどうぞ。現在は「%s」となっています。" % hitokoto)
             hitokoto = input()
             
+            #現在時刻取得
+            dt_now = datetime.datetime.now()
+            data = dt_now.strftime('%m月%d日 %H:%M:%S')
+            
             print("更新ありがとうございます。読み込みボタンをおしてください。")
             
             
@@ -135,10 +148,12 @@ def write_data():
             df.iat[i, 4] = memori
             df.iat[i, 5] = shigoto
             df.iat[i, 6] = hitokoto
+            df.iat[i, 7] = data
             
         
     #返還後のcsvを出力
     df.to_csv('test.csv', header = None, index = None)
+
 
 
 #メイン関数実行
